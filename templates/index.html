@@ -1,0 +1,215 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elephant Detection System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+    <div class="container">
+        <h2 class="text-center">Elephant Detection System</h2>
+        
+       
+        <form action="/" method="post" enctype="multipart/form-data" class="my-3">
+            <input type="file" name="images" multiple class="form-control mb-3">
+            <button type="submit" class="btn btn-primary">Upload & Analyze</button>
+        </form>
+      
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if results %}
+        <h3 class="mt-4">Detection Results</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Image Name</th>
+                    <th>Elephant Count</th>
+                    <th>Outlier</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row['Image'] }}</td>
+                    <td>{{ row['Detections'] }}</td>
+                    <td>{{ row['Outlier'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+       
+        {% if disaster_warning %}
+            <div class="alert alert-danger text-center">
+                🚨 Unusual elephant activity detected! Possible emergency alert! 🐘⚠️
+            </div>
+        {% endif %}
+
+        
+        <a href="{{ url_for('download_results_csv') }}" class="btn btn-success">Download Results</a>
+        <a href="{{ url_for('download_outliers_csv') }}" class="btn btn-warning">Download Outliers</a>
+        {% endif %}
+    </div>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="rgb(242 242 242)">
+    <meta name="theme-color" content="rgb(17 17 17)">
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- <script src="./preloader/bigBang.js"></script> -->
+    <script src="{{ url_for('static', filename='js/bigBang.js') }}"></script>
+    <title>Elephant Detection System</title>
+</head>
+<body data-theme="light">
+
+
+    <canvas id="bigbang"></canvas>
+
+
+	<script id="shader-fs" type="x-shader/x-fragment">
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+		void main(void) {
+			gl_FragColor = vec4(0.2, 0.3, 0.4, 1.0);
+		}
+	</script>
+
+
+	<script id="shader-vs" type="x-shader/x-vertex">
+		attribute vec3 vertexPosition;
+
+		uniform mat4 modelViewMatrix;
+		uniform mat4 perspectiveMatrix;
+
+		void main(void) {
+			gl_Position = perspectiveMatrix * modelViewMatrix * vec4(  vertexPosition, 1.0);
+		}
+    </script>
+
+   
+
+
+        <section class="home {% if results %}hiddenn{% endif %}">
+            <h2 class="{% if results %}hidden{% endif %}">Elephant Detection System</h2>
+            
+            
+            <!-- <form action="/" method="post" enctype="multipart/form-data" class="my-3">
+                <input type="file" name="images" multiple class="form-control mb-3">
+                <button type="submit" class="btn btn-primary">Upload & Analyze</button>
+            </form> -->
+            <form action="/" method="post" enctype="multipart/form-data" class="{% if results %}hiddenn{% endif %}">
+                <label class="custom-file-upload">
+                    <input type="file" name="images" multiple required>
+                    Choose Files
+                </label>
+                <button class="buttonupload " type="submit">Upload & Detect</button>
+            </form>
+    
+            
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            </section>
+            <section class="result">
+    
+            
+            {% if results %}
+            {% if disaster_warning %}
+                <div class="alert alert-danger text-center" style="color: white;">
+                    🚨 Unusual Elephant activity detected! Possible natural disaster alert! 🌊
+                </div>
+            {% endif %}
+            <h3> Elephant Detection System: </h3>
+            <br>
+            <h3> Result </h3>
+            
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Image Name</th>
+                        <th>Elephant Count</th>
+                        <th>Outlier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                    <tr>
+                        <td>{{ row['Image'] }}</td>
+                        <td>{{ row['Detections'] }}</td>
+                        <td>{{ row['Outlier'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+    
+           
+            {% if disaster_warning %}
+                <div class="alert alert-danger text-center" style="color: white;">
+                    🚨 Unusual Elephant activity detected! Possible natural disaster alert! 🌊
+                </div>
+            {% endif %}
+
+            <br>
+            <br>
+    
+            
+            <a href="{{ url_for('download_results_csv') }}" class="download-btn">Download Results</a>
+            <br>
+            <br>
+            <a href="{{ url_for('download_outliers_csv') }}" class="download-btn">Download Outliers</a>
+            {% endif %}
+            <br>
+            <br>
+        </section>
+    
+    <script>
+        // Select the image input and preview elements
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.querySelector('.image-preview-container');
+
+        // Add an event listener for the file input change event
+        imageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];  // Get the first selected file
+
+            if (file) {
+                // Check if the selected file is an image
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();  // Create a FileReader instance
+
+                    // When the file is loaded by the reader, update the image preview
+                    reader.onload = function (event) {
+                        imagePreview.src = event.target.result;  // Set the preview image source to the file data
+                        imagePreviewContainer.style.display = 'block';  // Display the image preview container
+                    };
+
+                    reader.readAsDataURL(file);  // Read the file as a data URL (base64 encoded image)
+                } else {
+                    alert("Please upload a valid image file.");  // Alert if the file is not an image
+                }
+            }
+        });
+    </script>
+    
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
