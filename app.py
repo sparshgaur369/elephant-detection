@@ -12,6 +12,7 @@ MODEL_PATH = "model/best.pt"
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"YOLO model not found at {MODEL_PATH}")
 model = YOLO(MODEL_PATH)
+model.to('cpu')
 
 UPLOAD_FOLDER = "uploads"
 RESULTS_FOLDER = "results"
@@ -37,7 +38,8 @@ def process_images(upload_folder):
             continue
 
         # Run YOLO detection
-        results = model(img_path)  
+        # results = model(img_path)  
+        results = model(img_path, device='cpu')
         detections = len(results[0].boxes)
         results_data.append({"Image": img_name, "Detections": detections})
 
