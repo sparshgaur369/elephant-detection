@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
 # Load YOLO Model
-MODEL_PATH = r"model\best.pt"
+MODEL_PATH = "model/best.pt"
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"YOLO model not found at {MODEL_PATH}")
 model = YOLO(MODEL_PATH)
