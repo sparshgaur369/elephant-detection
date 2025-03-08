@@ -8,7 +8,6 @@ from ultralytics import YOLO
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-# Load YOLO Model
 MODEL_PATH = "model/best.pt"
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"YOLO model not found at {MODEL_PATH}")
